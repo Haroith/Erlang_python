@@ -7,8 +7,8 @@ class ErlangC:
     a = None # load in erlangs
 
     def __init__(self, calls_forecast_15_min, average_handling_time_seconds):
-        self.__lambda = calls_forecast_15_min / 15
-        self.__beta = average_handling_time_seconds / 60
+        self.__lambda = calls_forecast_15_min/15
+        self.__beta = average_handling_time_seconds/60
         self.a = self.__load(self.__lambda, self.__beta)
 
     def __load(self, calls, average_handling_time) :
@@ -24,9 +24,9 @@ class ErlangC:
 
     # s = number of agents
     def __delay_probability(self, s) :
-        delay_probability = (self.a**s / (math.factorial(s-1)*(s-self.a))) * self.__sum_for_dp(s) + (self.a**s/(math.factorial(s-1)*(s-self.a)))** -1
+        delay_probability = (pow(self.a, s) / (math.factorial(s-1)*(s-self.a))) * pow(self.__sum_for_dp(s) + (pow(self.a, s)/(math.factorial(s-1)*(s-self.a))), -1);
         return delay_probability
-
+    
     # s = number of agents
     # t = service level goal time in seconds
     def service_level_percents(self, s, t) :
@@ -36,7 +36,7 @@ class ErlangC:
 
     # s = number of agents
     def average_speed_answer_seconds(self, s) :
-        average_speed_answer_seconds = (self.delay_probability(s) * self.__beta) / (s - self.a)
+        average_speed_answer_seconds = (self.__delay_probability(s) * self.__beta) / (s - self.a)
         return average_speed_answer_seconds
 
 # We know calls forecast
