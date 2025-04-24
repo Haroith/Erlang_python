@@ -2,10 +2,10 @@ import math
 
 class ErlangB:
 
+    __erlangs = None;
+
     def __init__(self, calls, average_handling_time):
-        self.calls = calls
-        self.average_handling_time = average_handling_time
-        self.erlangs = self.__func_erlangs(self.calls, self.average_handling_time)
+        self.__erlangs = self.__func_erlangs(calls, average_handling_time)
 
     def __func_erlangs(self, calls, average_handling_time) :
         erlangs = calls * average_handling_time
@@ -14,11 +14,11 @@ class ErlangB:
     def __denominator_for_pb(self, agents) :
         denominator = 0
         for i in range(0, agents + 1):
-            denominator += (self.erlangs**i / math.factorial(i))
+            denominator += (self.__erlangs**i / math.factorial(i))
         return denominator
 
     def probability_of_blocking(self, agents) :
-        probability_of_blocking = ((self.erlangs**agents)/math.factorial(agents))/self.__denominator_for_pb(agents)
+        probability_of_blocking = ((self.__erlangs**agents)/math.factorial(agents))/self.__denominator_for_pb(agents)
         return probability_of_blocking
     
 # We know calls forecast
