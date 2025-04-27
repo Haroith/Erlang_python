@@ -5,7 +5,7 @@ class ErlangA :
     __lambda = None # calls per minute
     __mu = None # service rate
     __O = None # individual abandonment rate
-    __beta = None # averageHandlingTime in minutes
+    __beta = None # average handling time in minutes
     a = None # load in erlangs
 
     def __init__(self, calls_forecast_15_min, average_handling_time_seconds, average_patience) :
