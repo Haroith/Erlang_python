@@ -2,8 +2,8 @@ import math
 
 class ErlangC:
 
-    __lambda = None # callsForecast per 1 minute
-    __beta = None # averageHandlingTime in minutes
+    __lambda = None # calls forecast per 1 minute
+    __beta = None # average handling time in minutes
     a = None # load in erlangs
 
     def __init__(self, calls_forecast_15_min, average_handling_time_seconds):
