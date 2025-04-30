@@ -31,7 +31,7 @@ class ErlangChats :
     
     # s = number of agents
     def __delay_probability(self, s) :
-        delay_probability = (pow(self.a, s) / (math.factorial(s-1)*(s-self.a))) * pow(self.__SumForDP(s) + (pow(self.a, s)/(math.factorial(s-1)*(s-self.a))), -1);
+        delay_probability = (pow(self.a, s) / (math.factorial(s-1)*(s-self.a))) * pow(self.__sum_for_dp(s) + (pow(self.a, s)/(math.factorial(s-1)*(s-self.a))), -1);
         return delay_probability
     
     # s = number of agents
@@ -61,6 +61,52 @@ class ErlangChats :
     
     def probability_of_abandon(self, n) :
         ro = self.__load(n); # load per agent
-        probability_of_abandon = 1/(ro * self.a(n*self.__mu/self.__O , self.__lambda/self.__O)) + 1 - 1/ro
+        probability_of_abandon = 1/(ro * self.__a(n*self.__mu/self.__O , self.__lambda/self.__O)) + 1 - 1/ro
         return probability_of_abandon
     
+# We know chat messages forecast
+# We want to achieve service level
+# How many agents we need?
+# Let's make functions for 15 minutes interval
+# Using ErlangChats formulae
+# It's ErlangA that works with concurrency
+
+messages_forecast_15_min = 147 # 147 messages per 15 minutes
+service_level_percents_goal = 80 # 80%
+service_level_time_goal = 20 # 20 seconds
+# convert to minutes
+service_level_time_goal_minutes = service_level_time_goal/60
+
+# ErlangA formulae work with queue, so SL=80%/20seconds.
+
+# We need to know more statistics
+average_handling_time_seconds = 120 # average handling time in seconds
+average_patience = 10 # average patience
+
+# We want agents to work with 3 chats
+concurrency = 3
+
+# First step - to find agents without abandons
+erlang_chats = ErlangChats(messages_forecast_15_min, average_handling_time_seconds, average_patience, concurrency)
+calculated_sl = 1;
+agents = math.ceil(erlang_chats.a);
+while calculated_sl < service_level_percents_goal:
+    agents += 1 
+    calculated_sl = erlang_chats.service_level_percents(agents, service_level_time_goal_minutes)
+
+# Second step - to find abandons
+calculated_pab = erlang_chats.probability_of_abandon(agents)
+print('required agents=' , agents , '.')
+print('resulted probability of abandon=' , calculated_pab*100 ,'%'); # about 5% - very few
+
+# Last step - to find agents with abandons
+messages_forecast_15_min = messages_forecast_15_min * (1-calculated_pab)
+erlang_chats = ErlangChats(messages_forecast_15_min, average_handling_time_seconds, average_patience, concurrency)
+calculated_sl = 1
+agents = math.ceil(erlang_chats.a)
+while calculated_sl < service_level_percents_goal :
+    agents += 1
+    calculated_sl = erlang_chats.service_level_percents(agents, service_level_time_goal_minutes)
+
+print('required agents=',agents,'.')
+print('resulted service level=',calculated_sl,'%')
